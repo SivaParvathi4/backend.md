@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GPS Tracker Dashboard</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByijTh34MMyQkUsvOLs32DLzFQVwIe00k"></script>
+    <script>
+        let map;
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: 0, lng: 0 },
+                zoom: 2,
+            });
+
+            // Fetch locations from API
+            fetch("https://mlew-gps-tracking-api.onrender.com/api/locations")
+                .then((response) => response.json())
+                .then((data) => {
+                    const locations = data.locations;
+
+                    // Add markers to the map
+                    locations.forEach((loc) => {
+                        new google.maps.Marker({
+                            position: { lat: parseFloat(loc.latitude), lng: parseFloat(loc.longitude) },
+                            map: map,
+                            icon: {
+                                url: "https://cdn-icons-png.flaticon.com/512/2922/2922565.png", // Custom women icon URL
+                                scaledSize: new google.maps.Size(40, 40), // Resize icon
+                            },
+                        });
+                    });
+
+                    if (locations.length > 0) {
+                        const lastLocation = locations[locations.length - 1];
+                        map.setCenter({ lat: parseFloat(lastLocation.latitude), lng: parseFloat(lastLocation.longitude) });
+                        map.setZoom(15);
+                    }
+                });
+        }
+    </script>
+    <style>
+        #map {
+            height: 90vh;
+            width: 100%;
+        }
+    </style>
+</head>
+<body onload="initMap()">
+    <h1>GPS Tracker Dashboard</h1>
+    <div id="map"></div>
+</body>
+</html>
